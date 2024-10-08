@@ -22,7 +22,16 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     Get.put(MainController());
 
-    controller.initItems();
+
+    //controller.serialize();
+
+    controller.initItems().then((value) {
+      print('Init items finished');
+    });
+
+    //controller.initStream();
+
+    controller.getUsers();
   }
 
   MainController get controller => Get.find<MainController>();
@@ -66,23 +75,31 @@ class _MainPageState extends State<MainPage> {
               children: [
                 Obx(
                   () => Expanded(
-                    child: ListView.builder(
-                      itemBuilder: (context, index) {
-                        var item = controller.listItems[index];
-                        debugPrint('each item $item');
-                        if (item is ProductItem) {
-                          return ProductItemWidget(
-                            item: item,
-                          );
-                        } else if (item is DividerItem) {
-                          return const DividerItemWidget();
-                        } else if (item is HeaderItem) {
-                          return HeaderItemWidget(item: item);
-                        }
-                        return Container();
-                      },
-                      itemCount: controller.listItems.length,
-                    ),
+                    child: controller.listItems.isNotEmpty
+                        ? ListView.builder(
+                            itemBuilder: (context, index) {
+                              var item = controller.listItems[index];
+                             // debugPrint('each item $item');
+                              if (item is ProductItem) {
+                                return ProductItemWidget(
+                                  item: item,
+                                );
+                              } else if (item is DividerItem) {
+                                return const DividerItemWidget();
+                              } else if (item is HeaderItem) {
+                                return HeaderItemWidget(item: item);
+                              }
+                              return Container();
+                            },
+                            itemCount: controller.listItems.length,
+                          )
+                        : Container(
+                            child: Column(
+                              children: [
+                                CircularProgressIndicator()
+                              ],
+                            ),
+                          ),
                   ),
                 ),
                 InkWell(
